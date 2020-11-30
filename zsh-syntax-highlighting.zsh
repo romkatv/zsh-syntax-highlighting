@@ -266,10 +266,14 @@ _zsh_highlight()
 
       if $pred; then
         # Execute highlighter and save result
-        region_highlight=()
-        "_zsh_highlight_highlighter_${highlighter}_paint"
-        : ${(AP)cache_place::="${region_highlight[@]}"}
-        new_highlight+=($region_highlight)
+        () {
+          # Manipulating zle's region_highlight directly is slow, so we hide it
+          # with a regular array.
+          local -ah region_highlight=()
+          "_zsh_highlight_highlighter_${highlighter}_paint"
+          : ${(AP)cache_place::="${region_highlight[@]}"}
+          new_highlight+=($region_highlight)
+        }
       else
         # Use value form cache if any cached
         new_highlight+=("${(@P)cache_place}")
