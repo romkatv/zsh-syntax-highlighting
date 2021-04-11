@@ -27,13 +27,11 @@
 # vim: ft=zsh sw=2 ts=2 et
 # -------------------------------------------------------------------------------------------------
 
-# First of all, ensure predictable parsing.
-typeset zsh_highlight__aliases="$(builtin alias -Lm '[^+]*')"
-# In zsh <= 5.2, aliases that begin with a plus sign ('alias -- +foo=42')
-# are emitted by `alias -L` without a '--' guard, so they don't round trip.
-#
-# Hence, we exclude them from unaliasing:
-builtin unalias -m '[^+]*'
+'builtin' 'local' '-a' '_zsyh_src_opts'
+[[ ! -o 'aliases'         ]] || _zsyh_src_opts+=('aliases')
+[[ ! -o 'sh_glob'         ]] || _zsyh_src_opts+=('sh_glob')
+[[ ! -o 'no_brace_expand' ]] || _zsyh_src_opts+=('no_brace_expand')
+'builtin' 'setopt' 'no_aliases' 'no_sh_glob' 'brace_expand'
 
 # Set $0 to the expected value, regardless of functionargzero.
 0=${(%):-%N}
@@ -617,3 +615,6 @@ builtin unset zsh_highlight__aliases
 
 # Set $?.
 true
+
+(( ${#_zsyh_src_opts} )) && setopt ${_zsyh_src_opts[@]}
+'builtin' 'unset' '_zsyh_src_opts'
